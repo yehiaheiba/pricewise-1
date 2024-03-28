@@ -27,7 +27,6 @@ export default async function getCurrentUser() {
     }
 
     const user = { email: currentUser.email, role: currentUser.role };
-    console.log(user);
 
     return user;
   } catch (error) {
