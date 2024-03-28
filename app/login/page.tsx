@@ -85,7 +85,7 @@ export default function LoginPage() {
                 className="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-none appearance-none rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
               />
-              {errors && <p className="text-red-500">{errors.message}</p>}
+              {errors && <p className="text-red-500">error</p>}
             </div>
             <div className="flex justify-between">
               <div className="text-sm">
