@@ -3,12 +3,14 @@ import Searchbar from "@/components/Searchbar";
 import Image from "next/image";
 import { getAllProducts } from "@/lib/actions";
 import ProductCard from "@/components/ProductCard";
+import getCurrentUser from "@/lib/actions/getCurrentUser";
 
 export const dynamic = "force-dynamic";
 
 const Home = async () => {
   const allProducts = await getAllProducts();
   const products = allProducts?.props?.products;
+
   return (
     <>
       <section className="px-6 md:px-20 py-24">
