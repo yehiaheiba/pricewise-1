@@ -51,7 +51,7 @@ export default function LoginPage() {
     }
 
     redirect();
-  }, []);
+  }, [onSubmit]);
   // Function to determine where to redirect the user based on their role
   return (
     <>

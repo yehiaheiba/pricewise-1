@@ -5,8 +5,8 @@ import Product from "../models/product.model";
 import { connectToDB } from "../mongoose";
 import { scrapeAmazonProduct } from "../scraper";
 import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
-import { User } from "@/types";
 import { generateEmailBody, sendEmail } from "../nodemailer";
+import User from "../models/user.model";
 
 export async function scrapeAndStoreProduct(productUrl: string) {
   if (!productUrl) return;
@@ -78,6 +78,17 @@ export async function getAllProducts() {
     };
   } catch (error) {
     console.log(error);
+  }
+}
+
+export async function getAllUsers(): Promise<User[] | null> {
+  try {
+    await connectToDB(); // Ensure this is awaited if it's an async operation
+    const users = await User.find({}, "-hashedPassword"); // Excluding the hashedPassword field
+    return users;
+  } catch (error) {
+    console.log(error);
+    return null; // Ensure you return null here to match the function's return type
   }
 }
 
