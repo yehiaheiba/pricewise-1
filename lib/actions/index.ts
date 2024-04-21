@@ -81,14 +81,14 @@ export async function getAllProducts() {
   }
 }
 
-export async function getAllUsers(): Promise<User[] | null> {
+export async function getAllUsers(): Promise<User[]> {
   try {
     await connectToDB(); // Ensure this is awaited if it's an async operation
     const users = await User.find({}, "-hashedPassword"); // Excluding the hashedPassword field
     return users;
   } catch (error) {
     console.log(error);
-    return null; // Ensure you return null here to match the function's return type
+    return []; // Ensure you return null here to match the function's return type
   }
 }
 

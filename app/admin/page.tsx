@@ -11,7 +11,8 @@ interface User {
   email: string;
   role: string;
   store?: string;
-  password: string; // Add password field to the User interface
+  password: string;
+  isEditing?: boolean; // Add password field to the User interface
 }
 
 interface Store {
@@ -33,7 +34,7 @@ interface Store {
 const AdminPage = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState<User[] | null>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   const [user, setUser] = useState<User>({
     email: "",
@@ -97,10 +98,46 @@ const AdminPage = () => {
     });
   };
 
+  const toggleEdit = (index: number) => {
+    const newUsers = [...users];
+    newUsers[index].isEditing = !newUsers[index].isEditing;
+    setUsers(newUsers);
+  };
+
+  const handleEditChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const { name, value } = e.target as HTMLInputElement; // Correct typing for e.target
+    const newUsers = [...users];
+    if (name in user) {
+      // Type guard to ensure 'name' is a valid key of User
+      newUsers[index] = { ...newUsers[index], [name]: value }; // Safely assign the value to the user
+      setUsers(newUsers);
+    }
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent, index: number) => {
+    e.preventDefault();
+    const userToUpdate = users[index];
+    const response = await fetch("/api/update/user", {
+      method: "PUT", // Specify the request method
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userToUpdate), // Use the 'user' state directly
+    });
+    if (response.ok) {
+      console.log("successful user edit at ", index);
+    }
+
+    toggleEdit(index); // Turn off editing mode after update
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       const users = await getAllUsers();
-      setUsers(users);
+      setUsers(users.map((user) => ({ ...user, isEditing: false }))); // Add isEditing property to manage edit mode
     };
 
     const fetchUser = async () => {
@@ -199,11 +236,42 @@ const AdminPage = () => {
           <div>
             {users.map((user, index) => (
               <div key={index}>
-                {/* Render your product details here */}
-                <p>{user.email}</p>
-                <p>{user.role}</p>
-                <p>{user.store}</p>
-                {/* Add more product details as needed */}
+                {user.isEditing ? (
+                  <form onSubmit={(e) => handleEditSubmit(e, index)}>
+                    <input
+                      name="email"
+                      value={user.email}
+                      onChange={(e) => handleEditChange(e, index)}
+                      required
+                    />
+                    <select
+                      name="role"
+                      value={user.role}
+                      onChange={(e) => handleEditChange(e, index)}
+                      required
+                    >
+                      <option value="admin">Admin</option>
+                      <option value="user">User</option>
+                      <option value="seller">Seller</option>
+                    </select>
+                    <input
+                      name="store"
+                      value={user.store || ""}
+                      onChange={(e) => handleEditChange(e, index)}
+                    />
+                    <button type="submit">Save</button>
+                    <button type="button" onClick={() => toggleEdit(index)}>
+                      Cancel
+                    </button>
+                  </form>
+                ) : (
+                  <>
+                    <p>{user.email}</p>
+                    <p>{user.role}</p>
+                    <p>{user.store}</p>
+                    <button onClick={() => toggleEdit(index)}>Edit</button>
+                  </>
+                )}
               </div>
             ))}
           </div>

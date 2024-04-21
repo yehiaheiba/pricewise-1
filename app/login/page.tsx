@@ -11,6 +11,7 @@ import { useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const {
     register,
@@ -30,6 +31,7 @@ export default function LoginPage() {
     }).then((callback) => {
       if (callback?.ok) {
         console.log("successfull");
+        setLoggedIn(true);
       }
       if (callback?.error) {
         console.log("failed login");
@@ -51,7 +53,7 @@ export default function LoginPage() {
     }
 
     redirect();
-  }, [onSubmit]);
+  }, [loggedIn]);
   // Function to determine where to redirect the user based on their role
   return (
     <>
